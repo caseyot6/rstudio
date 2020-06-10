@@ -1,11 +1,171 @@
 ---
-title: "Cereal"
+title: "Analyzing a Cereal Rating Standard"
 author: "Chileshe Otieno"
-date: "6/8/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+
+library(tidyverse)
+library(ggplot2)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
+library(tm)
+
+Cereal = read.csv('Datasets/cereal.csv',  encoding = "UTF-8")
+Cereal = subset(filter(Cereal, type == "C"), select = -c(type, sodium, cups, shelf, potass, mfr, weight, vitamins))
+```
+
+
+```{r, echo = FALSE}
+
+highest_rating = Cereal %>% arrange(desc(rating)) %>% head(10)
+
+highest_calories =  Cereal %>% arrange(desc(calories)) %>% head(10)
+
+lowest_rating = Cereal %>% arrange(desc(rating)) %>% head(10)
+
+lowest_calories = Cereal %>% arrange(desc(calories)) %>% head(10)
+
+ggplot(data = Cereal) +
+  geom_point(aes(x = sugars, y = rating), color = "maroon", size = 3) +
+  labs(title = "Rating by Grams of Sugar") +
+  xlab("Sugar (grams)") +
+  ylab("Rating (0 - 100)")
+
+```
+
+There is a negative relationship between the cereal ratings and grams of sugar present in the cereal.
+
+Based on a linear regression, the relationship is statistically significant at the alpha = .01 level.
+
+R-squared is .5667, indicating that the linear model's relationship between the two accounts for about 56% of the variation in the data.
+
+```{r}
+  summary(lm(data = Cereal, rating~sugars))
+
+
+
+```
+
+
+```{r, echo=FALSE}
+  
+ggplot(data = Cereal) +
+  geom_point(aes(x = protein, y = rating), color = "maroon", size = 3) +
+  labs(title = "Rating by Grams of Protein") +
+  xlab("Proteins (grams)") +
+  ylab("Rating (0 - 100)")
+```
+
+
+There seems to be a positive relationship between the cereal ratings and grams of protein present in the cereal.
+
+Based on a linear regression, the relationship is statistically significant at the alpha = .01 level.
+
+R-squared is .2121, indicating that the linear model's relationship between the two accounts for about 21% of the variation in the data.
+
+```{r}
+  summary(lm(data = Cereal, rating~protein))
+  
+```
+
+
+
+```{r, echo=FALSE}
+  
+ggplot(data = Cereal) +
+  geom_point(aes(x = fiber, y = rating), color = "maroon", size = 3) +
+  labs(title = "Rating by Grams of Fiber") +
+  xlab("Fiber (grams)") +
+  ylab("Rating (0-100)")
+```
+
+There is a positive relationship between the cereal ratings and grams of fiber present in the cereal.
+
+Based on a linear regression, the relationship is statistically significant at the alpha = .01 level.
+
+R-squared is .3879, indicating that the linear model's relationship between the two accounts for about 39% of the variation in the data.
+
+```{r}
+  summary(lm(data = Cereal, rating~fiber))
+  
+```
+
+
+```{r, echo=FALSE}
+
+
+ggplot(data = Cereal) +
+  geom_point(aes(x = carbo, y = rating), color = "maroon", size = 3) +
+  labs(title = "Rating by Grams of Carbohydrate") +
+  xlab("Complex Carbohydrates (grams)") +
+  ylab("Rating (0-100)")
+
+```
+
+On a glance at the scatterplate, grams of complex carbohydrates and rating do not seem to correlate.
+
+A linear model of the relationship between the two variables shows a p-value greater than an alpha of .05,
+indicating a lack of significant relationship between the two.
+
+The linear model appears to only capture 20% of the variation between grams of complex carbs and the rating given to
+a cereal brand.
+
+```{r}
+  summary(lm(data = Cereal, rating~carbo))
+  
+
+```
+
+
+
+```{r, echo=FALSE}
+
+highest_rating_cereals = highest_rating %>% left_join(Cereal)
+lowest_rating_cereals = lowest_rating %>% left_join(Cereal)
+
+
+highest_calories_cereals = highest_calories %>% left_join(Cereal)
+lowest_calories_cereals = lowest_calories %>% left_join(Cereal)
+  
+```
+
+
+## Top 10 Rated Cereals
+```{r}
+
+highest_rating_cereals
+
+
+```
+
+
+## Bottom 10 Rated Cereals
+```{r}
+
+lowest_rating_cereals %>% arrange(desc(rating))
+
+
+```
+
+
+## 10 Highest Calorie Cereals
+```{r}
+
+highest_calories_cereals
+
+
+```
+
+
+## 10 Lowest Calorie Cereals 
+```{r}
+
+lowest_calories_cereals %>% arrange(desc(calories))
+
 
 ```

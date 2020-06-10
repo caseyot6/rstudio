@@ -6,6 +6,16 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+
+library(tidyverse)
+library(ggplot2)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
+library(tm)
+
+IBM.attrition = read.csv('Datasets/IBM_attrition.csv',  encoding = "UTF-8")
 
 ```

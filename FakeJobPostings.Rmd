@@ -1,11 +1,165 @@
 ---
 title: "Fake Job Postings"
 author: "Chileshe Otieno"
-date: "6/8/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+
+library(tidyverse)
+library(ggplot2)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
+library(tm)
+
+FakeJobs = read.csv('Datasets/fake_job_postings.csv',  encoding = "UTF-8")
 
 ```
+
+
+```{r}
+
+fraud_jobs = FakeJobs %>% filter(fraudulent == 1)
+actual_jobs = sample_n(FakeJobs %>% filter(fraudulent == 0), nrow(fraud_jobs))
+
+
+fraud_doc = fraud_jobs$description
+actual_doc = actual_jobs$description
+
+
+
+clean_dtm_text = function(document){
+  
+  a = Corpus(VectorSource(document))
+
+  doc = a %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+  
+  doc = tm_map(doc, content_transformer(tolower))
+  doc = tm_map(doc, removeWords, stopwords("english"))
+  
+  dtm = TermDocumentMatrix(doc) 
+  matrix = as.matrix(dtm) 
+  words = sort(rowSums(matrix),decreasing=TRUE) 
+  df = data.frame(word = names(words),freq=words)
+  
+  return(df)
+}
+
+
+```
+
+
+
+```{r}
+
+
+count_questions_fake = fraud_jobs %>% group_by(has_questions) %>% summarize(count = n())
+count_questions_legit = FakeJobs %>% filter(fraudulent == 0) %>% group_by(has_questions) %>% summarize(count = n())
+
+
+```
+
+
+```{r}
+
+
+
+ggplot(data = fraud_jobs) +
+  geom_bar(aes(x = employment_type, fill = factor(has_questions))) +
+  labs(title = "Distribution of Employment Types in Fraudulent Jobs")
+
+
+ggplot(data = fraud_jobs) +
+  geom_bar(aes(x = required_education), fill = "darkgreen") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = "Distribution of Required Eduction in Fraudulent Jobs")
+
+
+ggplot(data = filter(FakeJobs, fraudulent == 0)) +
+  geom_bar(aes(x = required_education), fill = "darkgreen") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = "Distribution of Required Education in Legitimate Jobs")
+
+
+
+
+
+```
+
+
+
+```{r}
+
+
+fake_logos = FakeJobs %>% filter(fraudulent == 1) %>% group_by(has_company_logo) 
+count_fake_logos = fake_logos %>% summarize(count = n())
+
+actual_logos = FakeJobs %>% filter(fraudulent == 0) %>% group_by(has_company_logo) 
+count_actual_logos = actual_logos %>% summarize(count = n()) 
+
+fraud_jobs = FakeJobs %>% filter(fraudulent == 1)
+actual_jobs = FakeJobs %>% filter(fraudulent == 0)
+
+fraud_profile = clean_dtm_text(fraud_jobs$company_profile)
+actual_profile = clean_dtm_text(actual_jobs$company_profile)
+
+fraud_department = clean_dtm_text(fraud_jobs$department)
+actual_department = clean_dtm_text(actual_jobs$department)
+
+
+```
+
+
+
+
+### Keywords for Company Profiles of Fraudulent Job Listings
+
+```{r}
+
+
+
+wordcloud(fraud_profile$word, fraud_profile$freq, max.words = 50, min.freq = 1, colors=brewer.pal(9, "Set2"),
+          scale=c(3,0.1), random.order = FALSE, rot.per = 0)
+```
+
+### Keywords for Company Profiles of Legitimate Job Listings
+
+```{r}
+
+wordcloud(actual_profile$word, actual_profile$freq, max.words = 50, min.freq = 1, colors=brewer.pal(9, "Set2"),
+          scale=c(3,0.1), random.order = FALSE, rot.per = 0)
+
+
+
+
+```
+
+
+
+### Distribution of Keywords in Department Names for Fraudulent Jobs
+
+```{r}
+
+wordcloud(fraud_department$word, fraud_department$freq, max.words = 50, min.freq = 1, colors=brewer.pal(9, "Set2"),
+          scale=c(6,1), random.order = FALSE, rot.per = 0)
+
+```
+
+
+### Distribution of Keywords in Department Names for Actual Job Listings
+```{r}
+
+wordcloud(actual_department$word, actual_department$freq, max.words = 50, min.freq = 1, colors=brewer.pal(9, "Set2"),
+          scale=c(6,1), random.order = FALSE, rot.per = 0)
+
+
+
+```
+
