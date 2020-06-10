@@ -19,6 +19,28 @@ Cereal = read.csv('Datasets/cereal.csv',  encoding = "UTF-8")
 Cereal = subset(filter(Cereal, type == "C"), select = -c(type, sodium, cups, shelf, potass, mfr, weight, vitamins))
 ```
 
+[Back to Homepage](https://caseyot6.github.io/)
+
+
+Data Source: https://www.kaggle.com/crawford/80-cereals
+
+The data is compiled information on nutritional content for various cereals as well as a rating standard
+applied to each brand of cereal.
+
+From this data source, cold cereals were selected (cereals requiring no heating to be served).
+
+* Columns/variables selected:
++ Name (Factor), describes name of cereal brand
++ Calories (Integer), describes calories in grams per serving of the cereal
++ Protein (Integer), describes protein in grams per serving of the cereal
++ Fat (Numeric), describes fat in grams per serving of the cereal
++ Carbo (Numeric), describes complex carbohydrates in grams per serving of the cereal
++ Sugars (Integer), describes sugar in grams per serving of the cereal
++ Rating (Numeric), describes rating (0-100) assigned to each brand of cereal
+
+
+
+
 
 ```{r, echo = FALSE}
 
@@ -169,3 +191,10 @@ lowest_calories_cereals %>% arrange(desc(calories))
 
 
 ```
+
+
+
+
+[Back to Homepage](https://caseyot6.github.io/)
+
+

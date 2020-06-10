@@ -20,6 +20,15 @@ FakeJobs = read.csv('Datasets/fake_job_postings.csv',  encoding = "UTF-8")
 
 ```
 
+[Back to Homepage](https://caseyot6.github.io/)
+
+
+Data Source: https://www.kaggle.com/shivamb/real-or-fake-fake-jobposting-prediction/data#
+
+The data source contains 8K job descriptions out of which 800 are fake. 
+The text can be analyzed to find patterns. I mainly focused on observing the most common keywords used in the job descriptions.
+
+
 
 ```{r}
 
@@ -57,6 +66,9 @@ clean_dtm_text = function(document){
 
 
 
+
+
+
 ```{r}
 
 
@@ -65,6 +77,9 @@ count_questions_legit = FakeJobs %>% filter(fraudulent == 0) %>% group_by(has_qu
 
 
 ```
+
+
+
 
 
 ```{r}
@@ -79,7 +94,7 @@ ggplot(data = fraud_jobs) +
 ggplot(data = fraud_jobs) +
   geom_bar(aes(x = required_education), fill = "darkgreen") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    labs(title = "Distribution of Required Eduction in Fraudulent Jobs")
+    labs(title = "Distribution of Required Education in Fraudulent Jobs")
 
 
 ggplot(data = filter(FakeJobs, fraudulent == 0)) +
@@ -92,6 +107,9 @@ ggplot(data = filter(FakeJobs, fraudulent == 0)) +
 
 
 ```
+
+
+
 
 
 
@@ -129,6 +147,9 @@ wordcloud(fraud_profile$word, fraud_profile$freq, max.words = 50, min.freq = 1, 
           scale=c(3,0.1), random.order = FALSE, rot.per = 0)
 ```
 
+
+
+
 ### Keywords for Company Profiles of Legitimate Job Listings
 
 ```{r}
@@ -143,6 +164,7 @@ wordcloud(actual_profile$word, actual_profile$freq, max.words = 50, min.freq = 1
 
 
 
+
 ### Distribution of Keywords in Department Names for Fraudulent Jobs
 
 ```{r}
@@ -151,6 +173,8 @@ wordcloud(fraud_department$word, fraud_department$freq, max.words = 50, min.freq
           scale=c(6,1), random.order = FALSE, rot.per = 0)
 
 ```
+
+
 
 
 ### Distribution of Keywords in Department Names for Actual Job Listings
@@ -162,4 +186,13 @@ wordcloud(actual_department$word, actual_department$freq, max.words = 50, min.fr
 
 
 ```
+
+
+
+
+
+[Back to Homepage](https://caseyot6.github.io/)
+
+
+
 
